@@ -10,7 +10,15 @@ export default function AppHeader() {
       <InstallButton />
       <p>
         Choose a hardware version, give it a manufacturing number, mint a unique device ID, and emit the binary your
-        bootloader reads.
+        bootloader reads.{' '}
+        <a
+          href="https://docs.google.com/spreadsheets/d/1XCO8HlwrDKg65PxafYJL7tyFxyISs0e7VPcrFw7wpfM/edit?usp=sharing"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="sheet-link"
+        >
+          Open Google Sheet ↗
+        </a>
       </p>
     </header>
   );
