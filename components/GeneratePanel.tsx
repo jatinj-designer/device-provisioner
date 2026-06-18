@@ -10,8 +10,8 @@ export default function GeneratePanel({ p }: { p: Provisioner }) {
       <h2>
         <span className="num">02</span> New device
       </h2>
-      <button className="act primary" onClick={p.generate}>
-        Generate device ID
+      <button className="act primary" onClick={p.generate} disabled={p.hwLoading}>
+        {p.hwLoading ? 'Loading hardware…' : 'Generate device ID'}
       </button>
 
       {d && (

@@ -30,12 +30,17 @@ export default function HardwarePanel({ p }: { p: Provisioner }) {
             className="grow"
             value={p.selectedHw}
             onChange={(e) => p.setSelectedHw(e.target.value)}
+            disabled={p.hwLoading}
           >
-            {p.hwVersions.map((v) => (
-              <option key={v} value={v}>
-                {v}
-              </option>
-            ))}
+            {p.hwLoading ? (
+              <option>Loading from sheet…</option>
+            ) : (
+              p.hwVersions.map((v) => (
+                <option key={v} value={v}>
+                  {v}
+                </option>
+              ))
+            )}
           </select>
           <button
             type="button"

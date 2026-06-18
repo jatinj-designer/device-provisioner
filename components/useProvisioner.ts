@@ -28,6 +28,7 @@ export function useProvisioner() {
   const [selectedHw, setSelectedHw] = useState<string>(DEFAULT_HW[0]);
   const [mfg, setMfg] = useState<string>('');
   const [hydrated, setHydrated] = useState(false);
+  const [hwLoading, setHwLoading] = useState(!!SYNC.url);
 
   // Sheet records — null = not loaded yet, [] = loaded but empty.
   const [sheetRecords, setSheetRecords] = useState<Device[] | null>(null);
@@ -62,6 +63,20 @@ export function useProvisioner() {
   useEffect(() => {
     if (hwVersions.length && !hwVersions.includes(selectedHw)) setSelectedHw(hwVersions[0]);
   }, [hwVersions, selectedHw]);
+
+  /* ---- fetch HW versions from sheet on startup ---- */
+  useEffect(() => {
+    if (!hydrated || !SYNC.url) return;
+    apiGet(SYNC)
+      .then((data) => {
+        if (Array.isArray(data.hardwareVersions) && data.hardwareVersions.length) {
+          setHwVersions(data.hardwareVersions.slice());
+          setSelectedHw(data.hardwareVersions[0]);
+        }
+      })
+      .catch(() => {/* keep localStorage values on failure */})
+      .finally(() => setHwLoading(false));
+  }, [hydrated]);
 
   const hwHex = useMemo(() => hex32(hwVersionInt(selectedHw)), [selectedHw]);
 
@@ -250,7 +265,7 @@ export function useProvisioner() {
   }, [toast]);
 
   return {
-    pending, hwVersions, current, selectedHw, mfg, hwHex,
+    pending, hwVersions, hwLoading, current, selectedHw, mfg, hwHex,
     syncEnabled, syncStatus, syncMsg,
     sheetRecords, recordsLoading,
     setSelectedHw, setMfg,
