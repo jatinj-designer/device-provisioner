@@ -157,10 +157,24 @@ export function useProvisioner() {
     };
     setPending((prev) => [...prev, dev]);
     setCurrent(dev);
-    setSyncStatus('idle');
-    setSyncMsg(id + ' added — press Push to send to sheet');
     toast('Device ' + id + ' created');
-  }, [selectedHw, mfg, toast]);
+
+    if (!SYNC.url) return;
+
+    setSyncStatus('syncing');
+    setSyncMsg('Pushing ' + id + ' to sheet…');
+    apiPost(SYNC, 'addDevice', devicePayload(dev))
+      .then(() => {
+        setPending((prev) => prev.filter((x) => x.id !== id));
+        setSyncStatus('ok');
+        setSyncMsg(id + ' saved to sheet');
+        if (sheetRecords !== null) loadRecords();
+      })
+      .catch((err) => {
+        setSyncStatus('error');
+        setSyncMsg(id + ' push failed — stays in pending: ' + (err instanceof Error ? err.message : String(err)));
+      });
+  }, [selectedHw, mfg, toast, sheetRecords, loadRecords]);
 
   /* ----------------------------- hw versions ---- */
   const addHwVersion = useCallback((raw: string) => {
